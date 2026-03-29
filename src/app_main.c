@@ -161,7 +161,7 @@ void user_app_init(void)
 
     batteryCb(NULL);
 
-#if DEBUG_BATTERY
+#if DEBUG_BATTERY_EN
     g_appCtx.timerBatteryEvt = TL_ZB_TIMER_SCHEDULE(batteryCb, NULL, 5000);
 #else
     g_appCtx.timerBatteryEvt = TL_ZB_TIMER_SCHEDULE(batteryCb, NULL, BATTERY_TIMER_INTERVAL);
@@ -204,7 +204,7 @@ void app_task(void) {
 #if PM_ENABLE
         button_handler();
         if(!button_idle()) {
-#if DEBUG_PM
+#if DEBUG_PM_EN
             app_pm_lowPowerEnter();
 #else
             drv_pm_lowPowerEnter();
@@ -218,9 +218,7 @@ extern volatile uint16_t T_evtExcept[4];
 
 static void appSysException(void) {
 
-#if UART_PRINTF_MODE
-    printf("app_sysException, line: %d, event: 0x%02x, reset\r\n", T_evtExcept[0], T_evtExcept[1]);
-#endif
+    APP_DEBUG(UART_PRINTF_MODE, "app_sysException, line: %d, event: 0x%02x, reset\r\n", T_evtExcept[0], T_evtExcept[1]);
 
 #if 1
     SYSTEM_RESET();
@@ -241,9 +239,7 @@ static void appSysException(void) {
  */
 void user_init(bool isRetention)
 {
-#if UART_PRINTF_MODE
-//    printf("[%d] isRetention: %s\r\n", count_restart++, isRetention?"true":"false");
-#endif /* UART_PRINTF_MODE */
+//    APP_DEBUG(UART_PRINTF_MODE, "[%d] isRetention: %s\r\n", count_restart++, isRetention?"true":"false");
 
     /* Initialize LEDs*/
     light_init();

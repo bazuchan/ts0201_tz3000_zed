@@ -377,7 +377,7 @@ static void app_zclCfgReportCmd(uint8_t endPoint, uint16_t clusterId, zclCfgRepo
 {
 //    printf("app_zclCfgReportCmd\r\n");
     app_sensor_get_period();
-    reportAttrTimerStop();
+//    reportAttrTimerStop();
 }
 
 /*********************************************************************

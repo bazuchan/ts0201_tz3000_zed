@@ -14,9 +14,7 @@ static void buttonKeepPressed(u8 btNum) {
     g_appCtx.button[btNum-1].ctn = 0;
 
     if(btNum == VK_SW1) {
-#if UART_PRINTF_MODE && DEBUG_BUTTON
-        printf("The button was keep pressed for 5 seconds\r\n");
-#endif
+        APP_DEBUG(DEBUG_BUTTON_EN, "The button was keep pressed for 5 seconds\r\n");
 
 
         zb_factoryReset();
@@ -33,9 +31,7 @@ static void buttonSinglePressed(u8 btNum) {
 
     switch (btNum) {
         case VK_SW1:
-#if UART_PRINTF_MODE && DEBUG_BUTTON
-            printf("Button push 1 time\r\n");
-#endif
+            APP_DEBUG(DEBUG_BUTTON_EN, "Button push 1 time\r\n");
             if(zb_isDeviceJoinedNwk()) {
                 app_setPollRate(TIMEOUT_20SEC);
                 TL_ZB_TIMER_SCHEDULE(forcedReportCb, NULL, TIMEOUT_100MS);
@@ -58,9 +54,7 @@ static void buttonSinglePressed(u8 btNum) {
 //}
 
 static void buttonTriplePressed(u8 btNum) {
-#if UART_PRINTF_MODE && DEBUG_BUTTON
-            printf("Button push 3 times\r\n");
-#endif
+    APP_DEBUG(DEBUG_BUTTON_EN, "Button push 3 times\r\n");
     if (!g_appCtx.bdbFBTimerEvt) {
         g_appCtx.bdbFBTimerEvt = TL_ZB_TIMER_SCHEDULE(app_bdbFindAndBindStart, NULL, 50);
     }

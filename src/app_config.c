@@ -19,9 +19,7 @@ nv_sts_t config_save() {
 
 #if NV_ENABLE
 
-#if UART_PRINTF_MODE && DEBUG_SAVE
-    printf("Saved config\r\n");
-#endif
+    APP_DEBUG(DEBUG_SAVE_EN, "Saved config\r\n");
 
     config.crc = checksum((uint8_t*)&config, sizeof(config_t)-1);
     st = nv_flashWriteNew(1, NV_MODULE_APP,  NV_ITEM_APP_USER_CFG, sizeof(config_t), (uint8_t*)&config);
@@ -44,16 +42,12 @@ nv_sts_t config_restore() {
 
     if (st == NV_SUCC && temp_config.crc == checksum((uint8_t*)&temp_config, sizeof(config_t)-1)) {
 
-#if UART_PRINTF_MODE && DEBUG_SAVE
-        printf("Restored config\r\n");
-#endif
+        APP_DEBUG(DEBUG_SAVE_EN, "Restored config\r\n");
 
         memcpy(&config, &temp_config, (sizeof(config_t)));
     } else {
         /* default config */
-#if UART_PRINTF_MODE && DEBUG_SAVE
-        printf("Default config\r\n");
-#endif
+        APP_DEBUG(DEBUG_SAVE_EN, "Default config\r\n");
         config.read_sensors_period = DEFAULT_READ_SENSORS_PERIOD;
         config.temperature_offset = DEFAULT_TEMPERATURE_OFFSET;
         config.temperature_onoff = DEFAULT_TEMPERATURE_ONOFF;

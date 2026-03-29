@@ -16,46 +16,46 @@ static sensor_t sensor;
 static void sensor_error_codes_print_result(const char api_name[], int8_t rslt, uint8_t addr) {
     if (rslt != SENSOR_OK)
     {
-        printf("%s\t", api_name);
+        APP_DEBUG(DEBUG_SENSOR_EN, "%s\t", api_name);
 
         switch (rslt)
         {
             case SENSOR_ERR_NULL_PTR:
-                printf("Error [%d] : Null pointer error.", rslt);
-                printf("It occurs when the user tries to assign value (not address) to a pointer, which has been initialized to NULL.\r\n");
+                APP_DEBUG(DEBUG_SENSOR_EN, "Error [%d] : Null pointer error.", rslt);
+                APP_DEBUG(DEBUG_SENSOR_EN, "It occurs when the user tries to assign value (not address) to a pointer, which has been initialized to NULL.\r\n");
                 break;
 
             case SENSOR_ERR_COMM_FAIL:
-                printf("Error [%d] : Communication failure error.", rslt);
-                printf("It occurs due to read/write operation failure and also due to power failure during communication\r\n");
+                APP_DEBUG(DEBUG_SENSOR_EN, "Error [%d] : Communication failure error.", rslt);
+                APP_DEBUG(DEBUG_SENSOR_EN, "It occurs due to read/write operation failure and also due to power failure during communication\r\n");
                 break;
 
             case SENSOR_ERR_DEV_NOT_FOUND:
-                printf("Error [%d] : Device not found error. It occurs when the device chip id is incorrectly read\r\n", rslt);
+                APP_DEBUG(DEBUG_SENSOR_EN, "Error [%d] : Device not found error. It occurs when the device chip id is incorrectly read\r\n", rslt);
                 break;
 
             case SENSOR_ERR_ADDR_NOT_FOUND:
-                printf("Error [%d] : Device not found at address. Address 0x%02x not correct\r\n", rslt, addr);
+                APP_DEBUG(DEBUG_SENSOR_EN, "Error [%d] : Device not found at address. Address 0x%02x not correct\r\n", rslt, addr);
                 break;
 
             case SENSOR_ERR_INVALID_LEN:
-                printf("Error [%d] : Invalid length error. It occurs when write is done with invalid length\r\n", rslt);
+                APP_DEBUG(DEBUG_SENSOR_EN, "Error [%d] : Invalid length error. It occurs when write is done with invalid length\r\n", rslt);
                 break;
 
             case SENSOR_ERR_CRC:
-                printf("Error [%d] : Invalid crc\r\n", rslt);
+                APP_DEBUG(DEBUG_SENSOR_EN, "Error [%d] : Invalid crc\r\n", rslt);
                 break;
 
 //            case SENSOR_ERR_NOT_READY:
-//                printf("Error [%d] : Device not ready. Output buffer is empty\r\n", rslt);
+//                APP_DEBUG(DEBUG_SENSOR_EN, "Error [%d] : Device not ready. Output buffer is empty\r\n", rslt);
 //                break;
 
             case SENSOR_ERR_MODE_FAIL:
-                printf("Error [%d] : The device cannot accept commands. The device is in periodic measurement mode.\r\n", rslt);
+                APP_DEBUG(DEBUG_SENSOR_EN, "Error [%d] : The device cannot accept commands. The device is in periodic measurement mode.\r\n", rslt);
                 break;
 
             default:
-                printf("Error [%d] : Unknown error code\r\n", rslt);
+                APP_DEBUG(DEBUG_SENSOR_EN, "Error [%d] : Unknown error code\r\n", rslt);
                 break;
         }
     }
@@ -130,7 +130,7 @@ static uint8_t app_cht8305_init() {
     sensor_error_codes_print_result("cht8305_init", ret, cht8305_dev.addr);
 #endif
 
-//    printf("cht8305 ID: 0x%08x\r\n", cht8305_dev.id);
+//    APP_DEBUG(DEBUG_SENSOR_EN, "cht8305 ID: 0x%08x\r\n", cht8305_dev.id);
 
     return ret;
 }
@@ -139,9 +139,8 @@ static void  app_cht8305_set_temperature() {
 
     int16_t temperature = ((int32_t)(16500 * cht8305_dev.raw_temp) / 65535) - 4000 + config.temperature_offset;
 
-#if UART_PRINTF_MODE && DEBUG_SENSOR
-        printf("temperature: %d\r\n", temperature);
-#endif
+
+        APP_DEBUG(DEBUG_SENSOR_EN, "temperature: %d\r\n", temperature);
 
         zcl_setAttrVal(APP_ENDPOINT1, ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT, ZCL_TEMPERATURE_MEASUREMENT_ATTRID_MEASUREDVALUE, (uint8_t*)&temperature);
 }
@@ -150,9 +149,7 @@ static void app_cht8305_set_humidity() {
 
     int16_t humidity = ((uint32_t)(10000 * cht8305_dev.raw_hum) / 65535) + config.humidity_offset;
 
-#if UART_PRINTF_MODE && DEBUG_SENSOR
-    printf("humidity: %d\r\n", humidity);
-#endif
+    APP_DEBUG(DEBUG_SENSOR_EN, "humidity: %d\r\n", humidity);
     if (humidity < 0)
         humidity = 0;
     if (humidity > 10000)
@@ -169,8 +166,8 @@ static void app_cht8305_measurement() {
 
 #if UART_PRINTF_MODE && DEBUG_SENSOR
     sensor_error_codes_print_result("app_cht8305_measurement", ret, cht8305_dev.addr);
-//    printf("temperature_raw: 0x%04x\r\n", cht8305_dev.raw_temp);
-//    printf("humidity_raw:    0x%04x\r\n", cht8305_dev.raw_hum);
+//    APP_DEBUG(DEBUG_SENSOR_EN, "temperature_raw: 0x%04x\r\n", cht8305_dev.raw_temp);
+//    APP_DEBUG(DEBUG_SENSOR_EN, "humidity_raw:    0x%04x\r\n", cht8305_dev.raw_hum);
 #endif
 
     if (ret == SENSOR_OK) {
@@ -257,9 +254,7 @@ static void  app_sht30_set_temperature() {
 
     int16_t temperature = ((int32_t)(17500 * sht30_dev.raw_temp) / 65535) - 4500 + config.temperature_offset;
 
-#if UART_PRINTF_MODE && DEBUG_SENSOR
-        printf("temperature: %d\r\n", temperature);
-#endif
+        APP_DEBUG(DEBUG_SENSOR_EN, "temperature: %d\r\n", temperature);
 
         zcl_setAttrVal(APP_ENDPOINT1, ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT, ZCL_TEMPERATURE_MEASUREMENT_ATTRID_MEASUREDVALUE, (uint8_t*)&temperature);
 }
@@ -268,9 +263,7 @@ static void app_sht30_set_humidity() {
 
     int16_t humidity = ((uint32_t)(10000 * sht30_dev.raw_hum) / 65535) + config.humidity_offset;
 
-#if UART_PRINTF_MODE && DEBUG_SENSOR
-    printf("humidity: %d\r\n", humidity);
-#endif
+    APP_DEBUG(DEBUG_SENSOR_EN, "humidity: %d\r\n", humidity);
     if (humidity < 0)
         humidity = 0;
     if (humidity > 10000)
@@ -287,8 +280,8 @@ static void app_sht30_measurement() {
 
 #if UART_PRINTF_MODE && DEBUG_SENSOR
     sensor_error_codes_print_result("app_sht30_measurement", ret, sht30_dev.addr);
-//    printf("temperature_raw: 0x%04x\r\n", sht30_dev.raw_temp);
-//    printf("humidity_raw:    0x%04x\r\n", sht30_dev.raw_hum);
+//    APP_DEBUG(DEBUG_SENSOR_EN, "temperature_raw: 0x%04x\r\n", sht30_dev.raw_temp);
+//    APP_DEBUG(DEBUG_SENSOR_EN, "humidity_raw:    0x%04x\r\n", sht30_dev.raw_hum);
 #endif
 
     if (ret == SENSOR_OK) {
@@ -376,9 +369,7 @@ static void  app_sht40_set_temperature() {
 
     int16_t temperature = ((int32_t)(17500 * sht40_dev.raw_temp) / 65535) - 4500 + config.temperature_offset;
 
-#if UART_PRINTF_MODE && DEBUG_SENSOR
-        printf("temperature: %d\r\n", temperature);
-#endif
+        APP_DEBUG(DEBUG_SENSOR_EN, "temperature: %d\r\n", temperature);
 
         zcl_setAttrVal(APP_ENDPOINT1, ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT, ZCL_TEMPERATURE_MEASUREMENT_ATTRID_MEASUREDVALUE, (uint8_t*)&temperature);
 }
@@ -387,9 +378,7 @@ static void app_sht40_set_humidity() {
 
     int16_t humidity = ((uint32_t)(12500 * sht40_dev.raw_hum) / 65535) - 600 + config.humidity_offset;
 
-#if UART_PRINTF_MODE && DEBUG_SENSOR
-    printf("humidity:    %d\r\n", humidity);
-#endif
+    APP_DEBUG(DEBUG_SENSOR_EN, "humidity:    %d\r\n", humidity);
     if (humidity < 0)
         humidity = 0;
     if (humidity > 10000)
@@ -404,8 +393,8 @@ static void app_sht40_measurement() {
 
 #if UART_PRINTF_MODE && DEBUG_SENSOR
     sensor_error_codes_print_result("app_sht40_measurement", ret, sht40_dev.addr);
-//    printf("temperature_raw: 0x%04x\r\n", sht40_dev.raw_temp);
-//    printf("humidity_raw:    0x%04x\r\n", sht40_dev.raw_hum);
+//    APP_DEBUG(DEBUG_SENSOR_EN, "temperature_raw: 0x%04x\r\n", sht40_dev.raw_temp);
+//    APP_DEBUG(DEBUG_SENSOR_EN, "humidity_raw:    0x%04x\r\n", sht40_dev.raw_hum);
 #endif
 
     if (ret == SENSOR_OK) {
@@ -504,9 +493,7 @@ static void app_aht20_set_temperature() {
 
     int16_t temperature = ((int32_t)(2000 * aht20_dev.raw_temp) / 1048576 - 500) * 10 + config.temperature_offset;
 
-#if UART_PRINTF_MODE && DEBUG_SENSOR
-    printf("temperature: %d\r\n", temperature);
-#endif
+    APP_DEBUG(DEBUG_SENSOR_EN, "temperature: %d\r\n", temperature);
 
     zcl_setAttrVal(APP_ENDPOINT1, ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT, ZCL_TEMPERATURE_MEASUREMENT_ATTRID_MEASUREDVALUE, (uint8_t*)&temperature);
 
@@ -517,9 +504,7 @@ static void app_aht20_set_humidity() {
 
     int16_t humidity = ((uint32_t)(1000 * aht20_dev.raw_hum) / 1048576) * 10 + config.humidity_offset;
 
-#if UART_PRINTF_MODE && DEBUG_SENSOR
-    printf("humidity:    %d\r\n", humidity);
-#endif
+    APP_DEBUG(DEBUG_SENSOR_EN, "humidity:    %d\r\n", humidity);
     if (humidity < 0)
         humidity = 0;
     if (humidity > 10000)
@@ -536,8 +521,8 @@ static void app_aht20_measurement() {
 
 #if UART_PRINTF_MODE && DEBUG_SENSOR
     sensor_error_codes_print_result("app_aht20_measurement", ret, aht20_dev.addr);
-//    printf("temperature_raw: 0x%04x\r\n", aht20_dev.raw_temp);
-//    printf("humidity_raw:    0x%04x\r\n", aht20_dev.raw_hum);
+//    APP_DEBUG(DEBUG_SENSOR_EN, "temperature_raw: 0x%04x\r\n", aht20_dev.raw_temp);
+//    APP_DEBUG(DEBUG_SENSOR_EN, "humidity_raw:    0x%04x\r\n", aht20_dev.raw_hum);
 #endif
 
     if (ret == SENSOR_OK) {
@@ -583,9 +568,7 @@ sensor_error_t app_sensor_init() {
 
     if (ret == SENSOR_OK) sensor.inited = true;
 
-#if UART_PRINTF_MODE && DEBUG_SENSOR
-    printf("sensor inited: %d\r\n", sensor.inited);
-#endif
+    APP_DEBUG(DEBUG_SENSOR_EN, "sensor inited: %d\r\n", sensor.inited);
 
     return ret;
 }
@@ -621,7 +604,7 @@ uint16_t app_sensor_get_period() {
                     } else {
                         p_temp = pEntry->minInterval;
                     }
-//                    printf("min: %d, max: %d\r\n", pEntry->minInterval, pEntry->maxInterval);
+//                    APP_DEBUG(DEBUG_SENSOR_EN, "min: %d, max: %d\r\n", pEntry->minInterval, pEntry->maxInterval);
                 } else if (pEntry->clusterID == ZCL_CLUSTER_MS_RELATIVE_HUMIDITY) {
                     if (pEntry->maxInterval == 0xFFFF || pEntry->minInterval == 0) {
                         p_hum = pEntry->maxInterval;
@@ -630,7 +613,7 @@ uint16_t app_sensor_get_period() {
                     } else {
                         p_hum = pEntry->minInterval;
                     }
-//                    printf("min: %d, max: %d\r\n", pEntry->minInterval, pEntry->maxInterval);
+//                    APP_DEBUG(DEBUG_SENSOR_EN, "min: %d, max: %d\r\n", pEntry->minInterval, pEntry->maxInterval);
                 }
             }
         }
@@ -647,7 +630,7 @@ uint16_t app_sensor_get_period() {
 
     g_appCtx.read_sensor_period95p = (g_appCtx.read_sensor_period * 1000) / 100 * 95;
 
-//    printf("period: %d, period95p: %d\r\n", period, g_appCtx.read_sensor_period95p);
+//    APP_DEBUG(DEBUG_SENSOR_EN, "period: %d, period95p: %d\r\n", period, g_appCtx.read_sensor_period95p);
 
     if (!g_appCtx.timerSetPollRateEvt) app_setPollRate(TIMEOUT_3SEC);
 

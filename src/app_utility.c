@@ -7,40 +7,36 @@ uint32_t mcuBootAddrGet(void);
 
 void start_message() {
 #ifdef ZCL_OTA
-#if UART_PRINTF_MODE
-        printf("OTA mode enabled. MCU boot from address: 0x%x\r\n", mcuBootAddrGet());
-#endif /* UART_PRINTF_MODE */
+        APP_DEBUG(UART_PRINTF_MODE, "OTA mode enabled. MCU boot from address: 0x%x\r\n", mcuBootAddrGet());
 #else
-#if UART_PRINTF_MODE
-    printf("OTA mode desabled. MCU boot from address: 0x%x\r\n", mcuBootAddrGet());
-#endif /* UART_PRINTF_MODE */
+        APP_DEBUG(UART_PRINTF_MODE, "OTA mode desabled. MCU boot from address: 0x%x\r\n", mcuBootAddrGet());
 #endif
 
 #if UART_PRINTF_MODE
     const uint8_t version[] = ZCL_BASIC_SW_BUILD_ID;
-    printf("Firmware version: %s\r\n", version+1);
+    APP_DEBUG(UART_PRINTF_MODE, "Firmware version: %s\r\n", version+1);
 #if (BOARD == BOARD_HXDZ_ZBWSD_V02)
-    printf("Device is \"TS0201 _TZ3000_xr3htd96\"\r\n");
+    APP_DEBUG(UART_PRINTF_MODE, "Device is \"TS0201 _TZ3000_xr3htd96\"\r\n");
 #elif (BOARD == BOARD_IHSENO_IC_V0)
-    printf("Device is \"TS0201 _TZ3000_dowj6gyi\"\r\n");
+    APP_DEBUG(UART_PRINTF_MODE, "Device is \"TS0201 _TZ3000_dowj6gyi\"\r\n");
 #elif (BOARD == BOARD_ZBEACON)
-    printf("Device is \"TS0201 Zbeacon\"\r\n");
+    APP_DEBUG(UART_PRINTF_MODE, "Device is \"TS0201 Zbeacon\"\r\n");
 #elif (BOARD == BOARD_ZG_227ZS)
-    printf("Device is \"ZG-227Z HOBEIAN\"\r\n");
+    APP_DEBUG(UART_PRINTF_MODE, "Device is \"ZG-227Z HOBEIAN\"\r\n");
 #elif (BOARD == BOARD_TH01_ZBEACON)
-    printf("Device is \"TH01 Zbeacon\"\r\n");
+    APP_DEBUG(UART_PRINTF_MODE, "Device is \"TH01 Zbeacon\"\r\n");
 #else
 #error BOARD not defined!
 #endif
 
 #if (SENSOR_USED == SENSOR_CHT8305)
-    printf("The sensor used is CHT8305\r\n");
+    APP_DEBUG(UART_PRINTF_MODE, "The sensor used is CHT8305\r\n");
 #elif (SENSOR_USED == SENSOR_SHT30)
-    printf("The sensor used is SHT30\r\n");
+    APP_DEBUG(UART_PRINTF_MODE, "The sensor used is SHT30\r\n");
 #elif (SENSOR_USED == SENSOR_SHT40)
-    printf("The sensor used is SHT40\r\n");
+    APP_DEBUG(UART_PRINTF_MODE, "The sensor used is SHT40\r\n");
 #elif (SENSOR_USED == SENSOR_AHT20)
-    printf("The sensor used is AHT20\r\n");
+    APP_DEBUG(UART_PRINTF_MODE, "The sensor used is AHT20\r\n");
 #else
 #error SENSOR_USED not defined!
 #endif

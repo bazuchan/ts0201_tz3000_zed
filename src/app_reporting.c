@@ -304,5 +304,5 @@ void app_check_reporting() {
         }
     }
 
-    reportAttrTimerStop();
+//    reportAttrTimerStop();
 }
