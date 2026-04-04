@@ -57,6 +57,7 @@ typedef struct {
     bool     net_steer_start;
     bool     find_bind_flag;
     uint8_t  find_bind_src_ep;
+    uint8_t  find_bind_dst_ep;
 
     app_linkKey_info_t tcLinkKey;
 } app_ctx_t;

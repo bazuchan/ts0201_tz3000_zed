@@ -357,12 +357,17 @@ static void bdb_findBindRst(void)
  */
 _CODE_BDB_ static void bdb_binding(zdo_bind_dstAddr_t *pDstAddr, u8 clusterNum, u16 *clusterList)
 {
+    APP_DEBUG(DEBUG_BDB_EN, "bdb_binding. flag: %d\r\n", g_appCtx.find_bind_flag);
     zdo_bind_req_t req;
     memset(&req, 0, sizeof(zdo_bind_req_t));
     u8 bindStatus = ZDO_SUCCESS;
 
     ZB_IEEE_ADDR_COPY(req.src_addr, NIB_IEEE_ADDRESS());
-    req.src_endpoint = g_bdbCtx.simpleDesc->endpoint;
+    if (g_appCtx.find_bind_flag) {
+        req.src_endpoint = g_appCtx.find_bind_src_ep;
+        g_appCtx.find_bind_flag = false;
+    }
+    else req.src_endpoint = g_bdbCtx.simpleDesc->endpoint;
     req.dst_addr_mode = pDstAddr->dstAddrMode;
     if (req.dst_addr_mode == LONG_EXADDR_DSTENDPOINT) {
         ZB_IEEE_ADDR_COPY(req.dst_ext_addr, pDstAddr->dstAddr.dstExtAddr);
@@ -502,7 +507,7 @@ _CODE_BDB_ static void bdb_SimpleDescResp(void *arg)
     zdo_zdpDataInd_t *p = (zdo_zdpDataInd_t *)arg;
     zdo_simple_descriptor_resp_t *simpDescResp = (zdo_simple_descriptor_resp_t *)p->zpdu;
 
-    APP_DEBUG(DEBUG_BDB_EN, "bdb_SimpleDescResp, status: %d\r\n", simpDescResp->status);
+    APP_DEBUG(DEBUG_BDB_EN, "bdb_SimpleDescResp, flag: %d, ep: %d, status: %d\r\n", g_appCtx.find_bind_flag, simpDescResp->simple_descriptor.endpoint, simpDescResp->status);
     if (simpDescResp->status == SUCCESS) {
         if (g_bdbCtx.matchClusterList || g_bdbCtx.matchClusterNum) {
                 return;
@@ -531,7 +536,8 @@ _CODE_BDB_ static void bdb_SimpleDescResp(void *arg)
 
                 if (g_bdbCtx.matchClusterNum) {
                     g_bdbCtx.bindDstInfo.addr = simpDescResp->nwk_addr_interest;
-                    g_bdbCtx.bindDstInfo.endpoint = simpDescResp->simple_descriptor.endpoint;
+                    if (g_appCtx.find_bind_flag) g_bdbCtx.bindDstInfo.endpoint = g_appCtx.find_bind_dst_ep;
+                    else g_bdbCtx.bindDstInfo.endpoint = simpDescResp->simple_descriptor.endpoint;
 
                     bdb_findingAndBinding(&g_bdbCtx.bindDstInfo);
                     return;
@@ -557,18 +563,27 @@ _CODE_BDB_ static void bdb_SimpleDescResp(void *arg)
  */
 _CODE_BDB_ static void bdb_commissioningFindBindSimpleDescReq(void)
 {
-    APP_DEBUG(DEBUG_BDB_EN, "bdb_commissioningFindBindSimpleDescReq\r\n");
+    APP_DEBUG(DEBUG_BDB_EN, "bdb_commissioningFindBindSimpleDescReq. ");
     if (BDB_STATE_GET() == BDB_STATE_COMMISSIONING_FINDORBIND &&
         g_bdbCtx.role == BDB_COMMISSIONING_ROLE_INITIATOR) {
         zdo_simple_descriptor_req_t req;
         u8 sn = 0;
         memset(&req, 0, sizeof(zdo_simple_descriptor_req_t));
 
-        req.endpoint = g_bdbCtx.findDstInfo.endpoint;
+        if (g_appCtx.find_bind_flag) {
+            APP_DEBUG(DEBUG_BDB_EN, "find_bind_flag: true, ");
+            req.endpoint = g_appCtx.find_bind_dst_ep;
+        } else {
+            APP_DEBUG(DEBUG_BDB_EN, "find_bind_flag: false, ");
+            req.endpoint = g_bdbCtx.findDstInfo.endpoint;
+        }
         req.nwk_addr_interest = g_bdbCtx.findDstInfo.addr;
+
+        APP_DEBUG(DEBUG_BDB_EN, "dst_ep: %d", req.endpoint);
 
         zb_zdoSimpleDescReq(g_bdbCtx.findDstInfo.addr, &req, &sn, bdb_SimpleDescResp);
     }
+    APP_DEBUG(DEBUG_BDB_EN, "\r\n");
 }
 
 /*********************************************************************
@@ -727,7 +742,6 @@ _CODE_BDB_ static u8 bdb_commissioningFindBind(void)
                 if (g_appCtx.find_bind_flag) {
                     APP_DEBUG(DEBUG_BDB_EN, "find and bind starting\r\n");
                     ep = g_appCtx.find_bind_src_ep;
-                    g_appCtx.find_bind_flag = false;
                 } else {
                     APP_DEBUG(DEBUG_BDB_EN, "Not find and bind\r\n");
                     ep = g_bdbCtx.simpleDesc->endpoint;

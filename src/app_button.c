@@ -1,11 +1,19 @@
 #include "app_main.h"
 
+static ev_timer_event_t *findbindTimerEvt = NULL;
+
 static int32_t net_steer_start_offCb(void *args) {
 
     g_appCtx.net_steer_start = false;
 
     light_blink_stop();
 
+    return -1;
+}
+
+static int32_t find_and_bind_clear_flag(void *args) {
+
+    g_appCtx.find_bind_flag = false;
     return -1;
 }
 
@@ -73,7 +81,11 @@ static void buttonDoublePressed(u8 btNum) {
     if (!g_appCtx.bdbFBTimerEvt) {
         g_appCtx.find_bind_src_ep = APP_ENDPOINT1;
         g_appCtx.find_bind_flag = true;
-        g_appCtx.bdbFBTimerEvt = TL_ZB_TIMER_SCHEDULE(app_bdbFindAndBindStart, NULL, 50);
+        g_appCtx.bdbFBTimerEvt = TL_ZB_TIMER_SCHEDULE(app_bdbFindAndBindStart, NULL, TIMEOUT_50MS);
+        if (!findbindTimerEvt) {
+            TL_ZB_TIMER_CANCEL(&findbindTimerEvt);
+        }
+        findbindTimerEvt = TL_ZB_TIMER_SCHEDULE(find_and_bind_clear_flag, NULL, TIMEOUT_3MIN);
     }
 }
 
@@ -98,7 +110,11 @@ static void buttonTriplePressed(u8 btNum) {
     if (!g_appCtx.bdbFBTimerEvt) {
         g_appCtx.find_bind_src_ep = APP_ENDPOINT1;
         g_appCtx.find_bind_flag = true;
-        g_appCtx.bdbFBTimerEvt = TL_ZB_TIMER_SCHEDULE(app_bdbFindAndBindStart, NULL, 50);
+        g_appCtx.bdbFBTimerEvt = TL_ZB_TIMER_SCHEDULE(app_bdbFindAndBindStart, NULL, TIMEOUT_50MS);
+        if (!findbindTimerEvt) {
+            TL_ZB_TIMER_CANCEL(&findbindTimerEvt);
+        }
+        findbindTimerEvt = TL_ZB_TIMER_SCHEDULE(find_and_bind_clear_flag, NULL, TIMEOUT_3MIN);
     }
 }
 
@@ -123,40 +139,44 @@ static void buttonQuadruplePressed(u8 btNum) {
     if (!g_appCtx.bdbFBTimerEvt) {
         g_appCtx.find_bind_src_ep = APP_ENDPOINT2;
         g_appCtx.find_bind_flag = true;
-        g_appCtx.bdbFBTimerEvt = TL_ZB_TIMER_SCHEDULE(app_bdbFindAndBindStart, NULL, 50);
+        g_appCtx.bdbFBTimerEvt = TL_ZB_TIMER_SCHEDULE(app_bdbFindAndBindStart, NULL, TIMEOUT_50MS);
+        if (!findbindTimerEvt) {
+            TL_ZB_TIMER_CANCEL(&findbindTimerEvt);
+        }
+        findbindTimerEvt = TL_ZB_TIMER_SCHEDULE(find_and_bind_clear_flag, NULL, TIMEOUT_3MIN);
     }
 }
 
 static void buttonQuintuplePressed(u8 btNum) {
-    APP_DEBUG(DEBUG_BUTTON_EN, "Button push 5 times\r\n");
-    aps_binding_entry_t *bind_tbl = bindTblEntryGet();
-    for (uint8_t i = 0; i < APS_BINDING_TABLE_NUM; i++) {
-        if (bind_tbl->used && bind_tbl->clusterId == ZCL_CLUSTER_GEN_ON_OFF) {
-            APP_DEBUG(DEBUG_ONOFF_EN, "src_ep: %d, dst_ep: %d, ieee: 0x%02x%02x%02x%02x%02x%02x%02x%02x\r\n",
-                    bind_tbl->srcEp, bind_tbl->dstExtAddrInfo.dstEp,
-                    bind_tbl->dstExtAddrInfo.extAddr[0], bind_tbl->dstExtAddrInfo.extAddr[1],
-                    bind_tbl->dstExtAddrInfo.extAddr[2], bind_tbl->dstExtAddrInfo.extAddr[3],
-                    bind_tbl->dstExtAddrInfo.extAddr[4], bind_tbl->dstExtAddrInfo.extAddr[5],
-                    bind_tbl->dstExtAddrInfo.extAddr[6], bind_tbl->dstExtAddrInfo.extAddr[7]);
-        }
-        bind_tbl++;
-    }
 //    APP_DEBUG(DEBUG_BUTTON_EN, "Button push 5 times\r\n");
-//    aps_binding_entry_t *bind_tbl = aps_bindingTblEntryGet();
+//    aps_binding_entry_t *bind_tbl = bindTblEntryGet();
 //    for (uint8_t i = 0; i < APS_BINDING_TABLE_NUM; i++) {
 //        if (bind_tbl->used && bind_tbl->clusterId == ZCL_CLUSTER_GEN_ON_OFF) {
-//            if (memcmp(bind_tbl->dstExtAddrInfo.extAddr, get_ieee_coordinator(), 8)) {
-//                APP_DEBUG(DEBUG_ONOFF_EN, "Deleted src_ep: %d, dst_ep: %d, ieee: 0x%02x%02x%02x%02x%02x%02x%02x%02x\r\n",
-//                        bind_tbl->srcEp, bind_tbl->dstExtAddrInfo.dstEp,
-//                        bind_tbl->dstExtAddrInfo.extAddr[0], bind_tbl->dstExtAddrInfo.extAddr[1],
-//                        bind_tbl->dstExtAddrInfo.extAddr[2], bind_tbl->dstExtAddrInfo.extAddr[3],
-//                        bind_tbl->dstExtAddrInfo.extAddr[4], bind_tbl->dstExtAddrInfo.extAddr[5],
-//                        bind_tbl->dstExtAddrInfo.extAddr[6], bind_tbl->dstExtAddrInfo.extAddr[7]);
-//                bind_tbl->used = false;
-//            }
+//            APP_DEBUG(DEBUG_ONOFF_EN, "src_ep: %d, dst_ep: %d, ieee: 0x%02x%02x%02x%02x%02x%02x%02x%02x\r\n",
+//                    bind_tbl->srcEp, bind_tbl->dstExtAddrInfo.dstEp,
+//                    bind_tbl->dstExtAddrInfo.extAddr[0], bind_tbl->dstExtAddrInfo.extAddr[1],
+//                    bind_tbl->dstExtAddrInfo.extAddr[2], bind_tbl->dstExtAddrInfo.extAddr[3],
+//                    bind_tbl->dstExtAddrInfo.extAddr[4], bind_tbl->dstExtAddrInfo.extAddr[5],
+//                    bind_tbl->dstExtAddrInfo.extAddr[6], bind_tbl->dstExtAddrInfo.extAddr[7]);
 //        }
 //        bind_tbl++;
 //    }
+    APP_DEBUG(DEBUG_BUTTON_EN, "Button push 5 times\r\n");
+    aps_binding_entry_t *bind_tbl = aps_bindingTblEntryGet();
+    for (uint8_t i = 0; i < APS_BINDING_TABLE_NUM; i++) {
+        if (bind_tbl->used && bind_tbl->clusterId == ZCL_CLUSTER_GEN_ON_OFF) {
+            if (memcmp(bind_tbl->dstExtAddrInfo.extAddr, get_ieee_coordinator(), 8)) {
+                APP_DEBUG(DEBUG_ONOFF_EN, "Deleted src_ep: %d, dst_ep: %d, ieee: 0x%02x%02x%02x%02x%02x%02x%02x%02x\r\n",
+                        bind_tbl->srcEp, bind_tbl->dstExtAddrInfo.dstEp,
+                        bind_tbl->dstExtAddrInfo.extAddr[0], bind_tbl->dstExtAddrInfo.extAddr[1],
+                        bind_tbl->dstExtAddrInfo.extAddr[2], bind_tbl->dstExtAddrInfo.extAddr[3],
+                        bind_tbl->dstExtAddrInfo.extAddr[4], bind_tbl->dstExtAddrInfo.extAddr[5],
+                        bind_tbl->dstExtAddrInfo.extAddr[6], bind_tbl->dstExtAddrInfo.extAddr[7]);
+                bind_tbl->used = false;
+            }
+        }
+        bind_tbl++;
+    }
 }
 
 

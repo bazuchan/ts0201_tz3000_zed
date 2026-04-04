@@ -14,6 +14,9 @@ app_ctx_t g_appCtx = {
         .time_without_joined = 0,
         .net_steer_start = false,
         .read_sensor_time = 0,
+        .find_bind_flag = false,
+        .find_bind_dst_ep = APP_ENDPOINT1,
+        .find_bind_src_ep = APP_ENDPOINT1,
 };
 
 //uint32_t count_restart = 0;

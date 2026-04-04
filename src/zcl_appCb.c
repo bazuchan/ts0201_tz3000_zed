@@ -528,13 +528,14 @@ static void app_zcltriggerCmdHandler(zcl_triggerEffect_t *pTriggerEffect)
  *
  * @return  None
  */
-static void app_zclIdentifyQueryRspCmdHandler(uint8_t endpoint, uint16_t srcAddr, zcl_identifyRspCmd_t *identifyRsp) {
-    APP_DEBUG(DEBUG_ZCL_APP_EN, "app_zclIdentifyQueryRspCmdHandler\r\n");
+static void app_zclIdentifyQueryRspCmdHandler(uint8_t src_ep, uint8_t dst_ep, uint16_t srcAddr, zcl_identifyRspCmd_t *identifyRsp) {
+    APP_DEBUG(DEBUG_ZCL_APP_EN, "app_zclIdentifyQueryRspCmdHandler. src_ep: %d, dst_ep: %d, time: %d\r\n", src_ep, dst_ep, identifyRsp->timeout);
 #if FIND_AND_BIND_SUPPORT
 	if(identifyRsp->timeout){
 		findBindDst_t dstInfo;
 		dstInfo.addr = srcAddr;
-		dstInfo.endpoint = endpoint;
+		dstInfo.endpoint = dst_ep;
+		g_appCtx.find_bind_dst_ep = src_ep;
 
 		bdb_addIdentifyActiveEpForFB(dstInfo);
 	}
@@ -569,7 +570,7 @@ status_t app_identifyCb(zclIncomingAddrInfo_t *pAddrInfo, uint8_t cmdId, void *c
 			}
 		}else{
 			if(cmdId == ZCL_CMD_IDENTIFY_QUERY_RSP){
-				app_zclIdentifyQueryRspCmdHandler(pAddrInfo->dstEp, pAddrInfo->srcAddr, (zcl_identifyRspCmd_t *)cmdPayload);
+				app_zclIdentifyQueryRspCmdHandler(pAddrInfo->srcEp, pAddrInfo->dstEp, pAddrInfo->srcAddr, (zcl_identifyRspCmd_t *)cmdPayload);
 			}
 		}
 	}
