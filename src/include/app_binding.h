@@ -19,5 +19,6 @@ int32_t app_bindTimerCb(void *args);
 void app_update_bind_tbl(void *args);
 bool app_edle_bind_tbl();
 bool onoff_get_one_device();
+uint8_t *get_ieee_coordinator();
 
 #endif /* SRC_INCLUDE_APP_BINDING_H_ */

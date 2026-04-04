@@ -116,3 +116,7 @@ int32_t app_bindTimerCb(void *args) {
 
     return 0;
 }
+
+uint8_t *get_ieee_coordinator() {
+    return app_bind_tbl.extAddrCoordinator;
+}
