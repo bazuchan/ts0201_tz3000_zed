@@ -29,6 +29,8 @@ void start_message() {
     printf("Device is \"ZG-227Z HOBEIAN\"\r\n");
 #elif (BOARD == BOARD_TH01_ZBEACON)
     printf("Device is \"TH01 Zbeacon\"\r\n");
+#elif (BOARD == BOARD_Z_WXD)
+    printf("Device is \"Z WXD\"\r\n");
 #else
 #error BOARD not defined!
 #endif
