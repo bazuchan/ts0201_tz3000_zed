@@ -33,6 +33,7 @@
 #define BOARD_ZBEACON                       0x22
 #define BOARD_ZG_227ZS                      0x23
 #define BOARD_TH01_ZBEACON                  0x24
+#define BOARD_Z_WXD                         0x28
 
 #ifndef BOARD
 //#define BOARD                               BOARD_HXDZ_ZBWSD_V02

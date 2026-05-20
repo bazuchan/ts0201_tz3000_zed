@@ -25,6 +25,8 @@ void start_message() {
     APP_DEBUG(UART_PRINTF_MODE, "Device is \"ZG-227Z HOBEIAN\"\r\n");
 #elif (BOARD == BOARD_TH01_ZBEACON)
     APP_DEBUG(UART_PRINTF_MODE, "Device is \"TH01 Zbeacon\"\r\n");
+#elif (BOARD == BOARD_Z_WXD)
+    APP_DEBUG(UART_PRINTF_MODE, "Device is \"Z WXD\"\r\n");
 #else
 #error BOARD not defined!
 #endif
